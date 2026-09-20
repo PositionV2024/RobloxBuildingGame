@@ -264,7 +264,7 @@ task.spawn(function()
 			entries = {{
 				id = "gh-1", version = "DEMO", title = "Update-log preview (not a released update)",
 				publishedAt = 1,
-				body = "NEW\n• Your published, reviewed release notes appear here.\n\nIMPROVEMENTS\n• Navy/cyan update cards with a NEW badge.\n\nThis is sample text for Studio only. No DataStore writes are made in demo mode.",
+				body = "NEW\n� Your published, reviewed release notes appear here.\n\nIMPROVEMENTS\n� Navy/cyan update cards with a NEW badge.\n\nThis is sample text for Studio only. No DataStore writes are made in demo mode.",
 			}},
 		}
 		serviceStatus = "ready"
