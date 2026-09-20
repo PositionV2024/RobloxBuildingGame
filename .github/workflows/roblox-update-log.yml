@@ -2,13 +2,15 @@ name: Sync Roblox update log
 
 on:
   release:
-    types: [published, edited, released, unpublished, deleted]
+    types: [published, edited, unpublished, deleted]
+
   workflow_dispatch:
     inputs:
       dry_run:
         description: Validate release notes/images without writing to Roblox
         type: boolean
         default: false
+
       allow_empty:
         description: Intentionally clear the log when no eligible releases remain
         type: boolean
