@@ -27,26 +27,60 @@ jobs:
   sync:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+
+      ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
+      ROBLOX_ASSET_API_KEY: ${{ secrets.ROBLOX_ASSET_API_KEY }}
+
+      ROBLOX_UNIVERSE_ID: ${{ vars.ROBLOX_UNIVERSE_ID }}
+      ROBLOX_ASSET_CREATOR_TYPE: ${{ vars.ROBLOX_ASSET_CREATOR_TYPE }}
+      ROBLOX_ASSET_CREATOR_ID: ${{ vars.ROBLOX_ASSET_CREATOR_ID }}
+
+      ROBLOX_DRY_RUN: ${{ inputs.dry_run || false }}
+      ROBLOX_ALLOW_EMPTY: ${{ inputs.allow_empty || false }}
+
     steps:
-      - name: Check out trusted default-branch publisher
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - name: Check out trusted default branch
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
 
+      - name: Verify Roblox configuration
+        shell: bash
+        run: |
+          if [ -z "$ROBLOX_API_KEY" ]; then
+            echo "::error::ROBLOX_API_KEY was not supplied to this workflow"
+            exit 1
+          fi
+
+          if [ -z "$ROBLOX_ASSET_API_KEY" ]; then
+            echo "::error::ROBLOX_ASSET_API_KEY was not supplied to this workflow"
+            exit 1
+          fi
+
+          if [ -z "$ROBLOX_UNIVERSE_ID" ]; then
+            echo "::error::ROBLOX_UNIVERSE_ID is missing"
+            exit 1
+          fi
+
+          if [ -z "$ROBLOX_ASSET_CREATOR_TYPE" ]; then
+            echo "::error::ROBLOX_ASSET_CREATOR_TYPE is missing"
+            exit 1
+          fi
+
+          if [ -z "$ROBLOX_ASSET_CREATOR_ID" ]; then
+            echo "::error::ROBLOX_ASSET_CREATOR_ID is missing"
+            exit 1
+          fi
+
+          echo "ROBLOX_API_KEY is available."
+          echo "ROBLOX_ASSET_API_KEY is available."
+          echo "ROBLOX_UNIVERSE_ID is available."
+          echo "ROBLOX_ASSET_CREATOR_TYPE is available."
+          echo "ROBLOX_ASSET_CREATOR_ID is available."
+
       - name: Sync reviewed notes and release image to Roblox
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-          # Existing update-log DataStore credentials.
-          ROBLOX_API_KEY: ${{ secrets.ROBLOX_API_KEY }}
-          ROBLOX_UNIVERSE_ID: ${{ vars.ROBLOX_UNIVERSE_ID }}
-
-          # New automatic image-upload credentials/configuration.
-          ROBLOX_ASSET_API_KEY: ${{ secrets.ROBLOX_ASSET_API_KEY }}
-          ROBLOX_ASSET_CREATOR_TYPE: ${{ vars.ROBLOX_ASSET_CREATOR_TYPE }}
-          ROBLOX_ASSET_CREATOR_ID: ${{ vars.ROBLOX_ASSET_CREATOR_ID }}
-
-          ROBLOX_DRY_RUN: ${{ inputs.dry_run || false }}
-          ROBLOX_ALLOW_EMPTY: ${{ inputs.allow_empty || false }}
         run: python3 scripts/sync_roblox_update_log.py
